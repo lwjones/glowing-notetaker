@@ -18,13 +18,36 @@ router.post('/notes', (req, res) => {
   // add note to db array
   db.push(newNote);
 
-  // write changes to db
+  // write changes to database
   fs.writeFileSync(
     path.join(__dirname, '../../db/db.json'),
     JSON.stringify(db, null, 2)
   );
 
+  // return all notes
   res.json(db);
+});
+
+
+router.delete('/notes/:id', (req, res) => {
+  // identify the note and filter it out
+  const deleteNoteId = req.params.id;
+  const newNotesDB = db.filter(note => note.id !== deleteNoteId);
+
+  // report 400 if no changes
+  if (newNotesDB.length === db.length) {
+    res.status(400).send(`Note with ID ${deleteNoteId} not found. Check id of target.`);
+    return;
+  }
+
+  // write changes to database
+  fs.writeFileSync(
+    path.join(__dirname, '../../db/db.json'),
+    JSON.stringify(newNotesDB, null, 2)
+  );
+
+  // return all notes
+  res.json(newNotesDB);
 });
 
 

@@ -3,6 +3,7 @@ const path = require('path');
 const uniqid = require('uniqid');
 const router = require('express').Router();
 const db = require('../../db/db.json');
+const { createNote, filterOutById, writeChanges } = require('../../lib/notes')
 
 
 router.get('/notes', (req, res) => {
@@ -12,17 +13,13 @@ router.get('/notes', (req, res) => {
 
 router.post('/notes', (req, res) => {
   // get note info from body and give it a unique id
-  const newNote = req.body;
-  if (!newNote.id) newNote.id = uniqid.process();
+  let newNote = createNote(req.body);
 
   // add note to db array
   db.push(newNote);
 
   // write changes to database
-  fs.writeFileSync(
-    path.join(__dirname, '../../db/db.json'),
-    JSON.stringify(db, null, 2)
-  );
+  writeChanges(db);
 
   // return all notes
   res.json(db);
@@ -31,8 +28,7 @@ router.post('/notes', (req, res) => {
 
 router.delete('/notes/:id', (req, res) => {
   // identify the note and filter it out
-  const deleteNoteId = req.params.id;
-  const newNotesDB = db.filter(note => note.id !== deleteNoteId);
+  const newNotesDB = filterOutById(req.params.id, db);
 
   // report 400 if no changes
   if (newNotesDB.length === db.length) {
@@ -41,10 +37,7 @@ router.delete('/notes/:id', (req, res) => {
   }
 
   // write changes to database
-  fs.writeFileSync(
-    path.join(__dirname, '../../db/db.json'),
-    JSON.stringify(newNotesDB, null, 2)
-  );
+  writeChanges(newNotesDB)
 
   // return all notes
   res.json(newNotesDB);

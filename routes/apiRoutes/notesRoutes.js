@@ -1,9 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const uniqid = require('uniqid');
 const router = require('express').Router();
 const db = require('../../db/db.json');
-const { createNote, filterOutById, writeChanges } = require('../../lib/notes')
+const { createNote, findNoteByIndex, writeChanges } = require('../../lib/notes')
 
 
 router.get('/notes', (req, res) => {
@@ -27,20 +24,23 @@ router.post('/notes', (req, res) => {
 
 
 router.delete('/notes/:id', (req, res) => {
-  // identify the note and filter it out
-  const newNotesDB = filterOutById(req.params.id, db);
+  // identify the note
+  const noteIndex = findNoteByIndex(req.params.id, db);
 
-  // report 400 if no changes
-  if (newNotesDB.length === db.length) {
-    res.status(400).send(`Note with ID ${deleteNoteId} not found. Check id of target.`);
+  // report 400 if not found
+  if (noteIndex < 0) {
+    res.status(400).send(`Note with ID ${req.params.id} not found. Check id of target.`);
     return;
   }
 
+  // remove note from database
+  db.splice(noteIndex, 1);
+
   // write changes to database
-  writeChanges(newNotesDB)
+  writeChanges(db);
 
   // return all notes
-  res.json(newNotesDB);
+  res.json(db);
 });
 
 

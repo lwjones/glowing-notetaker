@@ -1,11 +1,7 @@
 [
   {
-    "title": "Test Title",
-    "text": "Test text"
-  },
-  {
-    "title": "New note",
-    "text": "Here's some text",
-    "id": "1y4vl0hr2sao"
+    "title": "How to use Note Taker",
+    "text": "To create a new note, press + button on the top-right corner. After entering a title and body text, press the save button that appears next to the + button.\n\nTo view a note, select the one you want to on the column on the left. Notes cannot be edited once they are saved.\n\nTo delete a note, press the trashcan button next to the note you want to delete.",
+    "id": "wa8l0khqu3x"
   }
 ]
